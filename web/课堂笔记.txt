@@ -1,0 +1,152 @@
+课程回顾：
+事务：保证多条操作的一致性
+事务的ACID:
+1、原子性：不可分割，不可部分成功或部分失败
+2、一致性：要么生，要么死
+3、隔离性：并发访问时，保证数据的准确性
+4、持久性：一旦commit之后，数据就真真正正的改变了
+
+事务的隔离：
+隔离级别：
+1、序列化：避免脏读、重复读、虚读
+2、避免脏读、重复读  MySQL默认
+3、避免脏读
+4、什么都不避免
+
+事务的使用：
+1、MySQL客户端：
+start transaction:开启事务
+commit:提交，确定修改
+rollback:回滚，取消修改
+2、JDBC操作事务
+connection.setAutoCommit(false):开启事务
+connection.commit():提交
+connection.rollback():回滚
+
+
+今日内容：
+
+一、连接池
+1.1连接池是什么？
+连接池就是管理数据库连接对象
+保证连接对象的数量，进而提升操作数据库的效率
+
+主要是并发访问时，会产生n个连接对象，
+这些都会对数据库服务器产生很大的压力，
+所以需要合理的使用数据库连接池，以减轻这种压力
+
+1.2连接池的工作原理
+集合存储连接对象，根据需要进行连接对象的创建、获取、销毁
+
+1.3DBCP连接池
+	常用类：
+		BasicDataSourceFactory.createDataSource(Properties):通过配置文件获取连接池对象
+使用时，需要导入jar和对应的配置文件
+
+1.4C3P0连接池
+   常用类：
+   ComboPooledDataSource:这是DataSource的子类，直接创建该类对象获取数据库连接池，加载默认配置文件
+   
+使用时，需要导入jar和对应的配置文件
+
+二、JDBC工具类Dbutils
+2.1QueryRunner:执行数据库的增删改查
+	常用方法：
+		1、update:执行非select语句
+		2、batch:批处理，同时处理多条相同的语句
+		3、query:执行SELECT语句
+		
+		query方法都需要ResultSetHandler<T>接口对象
+		该接口就一个方法：
+		handle：转换，参数：查询结果集，返回值类型：泛型
+		
+		一般常用默认的实现类：
+		1、ArrayHandler:将查询结果的第一行数据，的每个字段存储到数组中并返回
+		2、ArrayListHandler:把结果集中的每一行数据都转成一个数组，再存放到List中。
+		3、BeanHandler：将结果集中的第一行数据封装到一个对应的JavaBean实例中
+		4、BeanListHandler：将结果集中的每一行数据都封装到一个对应的JavaBean实例中，存放到List里
+		5、ColumnListHandler：将结果集中某一列的数据存放到List中。
+		6、KeyedHandler(name)：将结果集中的每一行数据都封装到一个Map<列名,列值>里，再把这些map再存到一个map里，其key为指定的key
+		
+		
+三、特殊的数据类型的对应：
+		PreparedStatement ps;
+		1.DATA,TIME,TIMESTAMP date,time,datetime
+			存：ps.setDate(i,d); ps.setTime(i,t); ps.setTimestamp(i, ts);
+  	  	取：rs.getDate(i); rs.getTime(i); rs.getTimestamp(i);
+	2.CLOB  text
+	  	存：ps.setCharacterStream(index, reader, length);
+	         	         ps.setString(i, s);
+	  	取：reader = rs. getCharacterStream(i);
+	        	        reader = rs.getClob(i).getCharacterStream();
+	                          string = rs.getString(i);
+	3.BLOB  blob
+	 	存：ps.setBinaryStream(i, inputStream, length);
+       			取：rs.getBinaryStream(i);
+	        	    rs.getBlob(i).getBinaryStream(); 
+Project项目，一般都会框架
+三层架构：
+1、显示层---H5或JSP
+2、业务逻辑层---Servlet
+3、数据层----实体类和数据库
+
+外到内：
+1、显示层：前端、Swing、main
+2、逻辑层：service：处理业务逻辑
+3、数据层：
+	1、entity/model：实体映射类
+	2、dao:操作数据库
+
+
+Bean类：
+1、私有属性
+2、公有get和set方法
+3、无参构造函数
+
+
+三、JDBC&数据库
+
+获取刚刚自增的id值：
+select last_insert_id()
+
+四、Properties:持久性属性集类
+主要用来存储或加载配置信息
+
+常用方法：
+	1、load:加载指定的配置文件
+	2、store:存储配置信息
+	3、setProperties:设置要存储的属性
+	4、getProperties:获取配置的属性的值
+
+
+1、前端
+2、MySQL
+3、Servlet
+4、Ajax+JQuery
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

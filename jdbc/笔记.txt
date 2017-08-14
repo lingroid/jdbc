@@ -1,0 +1,208 @@
+课程回顾：
+MySQL的七大语句：
+操作结构：
+创建数据库
+Create database 数据库名称 character set gbk collate gbk_general_ci
+创建表
+Create table 表名 (字段名称 数据类型 约束条件,……);
+修改数据库的编码
+alter database 数据库名称 character set 编码格式
+修改表结构
+alter table 表名 [add|change|modify]旧字段名称 字段名称 数据类型
+重新命名表名
+rename table 表名 to  新表名
+删除数据库
+drop database 数据库名称
+删除表
+drop table 表名
+
+操作数据：
+添加数据
+insert into 表名[(字段名称,……)] values(值,……);
+修改数据
+update 表名 set  字段名称=值 [where 条件]
+删除数据
+delete from 表名 [where 条件]
+查询数据
+select *|字段列表|聚合函数 from 表名 [where 条件] [group by 字段名称] [having 条件][order by 字段名称 ASC|DESC][limit 行索引,数量]
+多表查询：
+1、内部连接
+select * from 表1 join 表2 on 表1字段=表2字段
+2、左连接
+select * from 表1 left join 表2 on 表1字段=表2字段
+3、右连接
+select * from 表1 right join 表2 on 表1字段=表2字段
+
+约束条件：
+主键、唯一约束、非null、自增、默认值
+
+
+
+
+
+今日内容：
+
+一、JDBC:Java Data Base Connectivity java语言操作数据库的API
+是由类和接口组成的，然后交给数据库厂商来实现的，所以想操作数据库，
+需要下载对应数据库的驱动jar
+
+JDBC涉及的类和接口：
+1、DriverManager:驱动管理器
+2、Connection:连接接口
+3、Statement:操作SQL接口
+4、ResultSet:结果集
+5、PreparedStatement：操作SQL类，防止SQL注入，推荐使用
+
+二、使用JDBC的步骤：
+1、导入jar
+2、动态加载驱动(注册驱动)
+Class.forName("com.maysql.jdbc");
+3、获取连接对象
+Connection conn=DriverManager.getConnection("JDBC:mysql://主机IP:3306/数据库名称",用户名,密码);
+4、获取操作SQL对象
+Statement stmt=conn.createStatement();
+5、执行SQL
+stmt.execute(SQL);//执行任何SQL语句。返回boolean类型，是否为select语句
+stmt.executeUpdate(SQL);//执行非select语句,返回受影响的行数
+stmt.executeQuery(SQL);//执行select语句，返回查询的结果集ResultSet
+6、获取结果集
+ResultSet rs=stmt.executeQuery(sql);
+7、关闭
+rs.close();
+stmt.close();
+conn.close();
+
+三、JDBC类或接口的说明：
+3.1DriverManager:驱动管理类
+	管理数据库驱动
+	常用方法：
+		static Connection getConnection(String url) 
+          建立到给定数据库 URL 的连接。 
+		static Connection getConnection(String url, Properties info) 
+          建立到给定数据库 URL 的连接。 
+		static Connection getConnection(String url, String user, String password) 
+          建立到给定数据库 URL 的连接。 
+          
+          
+3.2Connection:数据库连接接口
+	附加连接到指定的数据库
+	常用方法：
+		createStatement：获取Statement对象
+
+3.3Satement:操作SQL接口
+	将指定的sql语句发送到数据库，并获取结果
+	常用方法：
+		1、boolean execute(sql)
+			执行任何SQL语句，返回值true:select语句，这时可以通过getResultSet(),false:非select语句
+		2、int executeUpdate(sql)
+			执行非select语句，返回操作的行数，如果为DDL语句返回0
+		3、ResultSet executeQuery(sql)
+			执行select语句，返回结果集
+		4、ResultSet getResultSet()
+			获取查询的结果，配合execute使用
+
+3.4ResultSet:结果集
+	记录查询的结果数据
+	常用方法：
+		1、boolean next:获取下一行数据 ,返回值：true:下一行有数据，false：没数据
+		2、first:返回到第一行
+		3、last:返回最后一行
+		4、getInt:获取整型
+		5、getLong:获取长整型
+		6、getFloat:获取浮点型
+		7、getDouble:获取双精度浮点型
+		8、getString:获取字符串
+		9、getBytes:获取二进制
+		10、getDate:获取日期
+		11、getTime:获取时间
+		
+注意：getXXX方法为获取指定列索引或列名称的值
+切记列索引从1开始
+3.5PreparedStatement：防止SQL注入的操作SQL对象
+	防止SQL注入，效率高
+	常用方法：
+	setXXX(index,value):设置对应sql语句的第index个参数对应的值为value
+	executeQuery:执行select语句
+	接收的SQL语句：
+	sql语句 where 字段=? 
+	
+
+
+四、封装数据库操作
+1、在src下创建xxx.properties
+	将需要用到的变量存储
+	键值对形式
+2、创建工具类
+	实现对数据库的操作：增删改查
+3、使用
+
+五、SQL注入
+就是sql语句根据输入进来的数据进行拼接，通过sql关键字造成不正确的结果
+例如：' or 1=1 or '
+如何防止这种行为出现呢，就是使用PreparedStatement代替Statement
+PreparedStatement的好处：
+1、防止SQL注入
+2、优化查询
+3、减少查询次数，Statement会频繁的查询数据库，可能会造成缓冲区的溢出
+	
+	
+	
+
+额外：
+1、JAVASE加载第三方jar:
+	1、创建文件夹lib
+	2、拷贝jar到lib文件夹
+	3、build path将对应的jar加载到应用程序
+2、HashTable和HashMap的区别?
+	1、父类不一样
+	HashMap基于Map<K,V>
+	HashTable基于陈旧的Dictionary<K,V>
+	2、contains方法不一样
+	HashMap:containsKey,containsValue
+	HashTable:contains---等价于containsValue
+	3、线程安全
+	HashMap：不安全，不能用在多线程并发中，效率高
+	HashTable:安全，效率低
+
+
+3、Properties：持久性属性集类
+	主要用来存储和读取配置文件，以.properties结尾
+	
+	自学Properties类的使用
+
+4、单元测试
+@Test:标记这是一个测试方法
+测试方法要求：
+	1、public修饰
+	2、无返回值
+	3、无参数
+
+5、工具类设计原则
+方便别人，麻烦自己
+内部方法一般都是静态方法
+考虑尽量全面
+
+6、可变参数
+格式：数据类型... 参数名称、
+参数可以有0个或多个
+出现在方法的声明中，只能在参数末尾
+在方法内部，当作数组使用
+
+
+
+@Override：标记这个方法为重写
+
+
+作业：
+1、巩固SQL语句并通过JDBC练习
+
+
+
+
+
+
+
+
+
+
+
